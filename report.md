@@ -47,15 +47,32 @@ To solve this task, I implemented the [DDPG algorithm](https://arxiv.org/pdf/150
   samples of this buffer, which might come from different timesteps (and potentially from
   different versions of the exploratory policy).
   
-The DDPG algorithm uses a policy to decide which actions are to take. The actor uses policy gradient approach with follow advantages:
+In DDPG the actor is the policy based part and the critic is the Q-learning part. 
+To learn the actor function <a href="https://www.codecogs.com/eqnedit.php?latex=\mu(s|\theta^Q)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mu(s|\theta^Q)" title="\mu(s|\theta^Q)" /></a> the DDPG algorithm performs gradient ascend w.r.t parameters to solve 
 
-* Continuous action spaces — Policy-based methods are well-suited for continuous action spaces.
-* Stochastic policies — Both value-based and policy-based methods can learn deterministic policies. However, policy-based methods can also learn true stochastic policies.
-* Simplicity — Policy-based methods directly learn the optimal policy, without having to maintain a separate value function estimate. With value-based methods, the agent uses its experience with the environment to maintain an estimate of the optimal action-value function, from which an optimal policy is derived.
+![](images/policy.png)
 
-TO 
 
-  
+
+The critic Q(s,a) can learned by considering the Bellman equation
+
+![](images/bellman.png)
+
+which describes the optimal action value function. 
+The loss function to learn the optimal action value function is 
+
+![](images/qloss.png)
+
+This mean squared loss function provides us with the information, how close the critic Q(s,a) comes to fullfill the Bellman equation. 
+
+To explore the continous action space, a exploration policy is used:
+
+<a href="https://www.codecogs.com/eqnedit.php?latex=\mu'&space;=&space;\mu(s|\theta^Q)&space;&plus;&space;\mathcal{N}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mu'&space;=&space;\mu(s|\theta^Q)&space;&plus;&space;\mathcal{N}" title="\mu' = \mu(s|\theta^Q) + \mathcal{N}" /></a>
+
+This policy adds to action from the actor function a noise sampled from a noise process. 
+
+After we have covered the ideas behind the DDPG here is the full algorithm 
+![](images/ddpgalgorithm.png)
   
   
 ## Project Structure
@@ -78,3 +95,13 @@ The code is written in PyTorch and Python3, executed in Jupyter Notebook
 
 
 ## Ideas for Future Work
+
+
+## References
+
+* [1] [Sutton, Richard & Barto, Andrew. *Reinforcement Learning: An introduction.*](http://incompleteideas.net/book/RLbook2018.pdf)
+* [2] [*Continuous control through deep reinforcement learning* paper by Lillicrap et. al.](https://arxiv.org/pdf/1509.02971.pdf)
+* [3] [*Deterministic Policy Gradients Algorithms* paper by Silver et. al.](http://proceedings.mlr.press/v32/silver14.pdf)
+* [4] [Post on *Deep Deterministic Policy Gradients* from OpenAI's **Spinning Up in RL**](https://spinningup.openai.com/en/latest/algorithms/ddpg.html)
+* [5] [Post on *Policy Gradient Algorithms* by **Lilian Weng**](https://lilianweng.github.io/lil-log/2018/04/08/policy-gradient-algorithms.html)
+
