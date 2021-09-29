@@ -19,7 +19,9 @@ To solve this task, I implemented the [DDPG algorithm](https://arxiv.org/pdf/150
 
 ## Learning Algorithm
 
-
+> DDPG combines the actor-critic approach with the insights from the Deep Q Network. DQN learn value functions 
+> using deep neural networks in a stalbe and robust way. They utilize a replay buffer to minimize correlations between samples
+> and a target Q network. DDPG is model free, off policy actor-critic algorithm that can learn high-dimensional, continuous action > spaces.  
 
 ## Project Structure
 
