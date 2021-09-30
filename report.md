@@ -80,22 +80,75 @@ After we have covered the ideas behind the DDPG here is the full algorithm
 The code is written in PyTorch and Python3, executed in Jupyter Notebook
 
 - Continuous_Control.ipynb	: Training and evaluation of the agent
-- ddpg_agent.py	: An agent that implement the DDPG algorithm
+- ddpgagent.py	: An agent that implement the DDPG algorithm
 - models.py	: DNN models for the actor and the critic
 - replaybuffer.py : Implementation of experience replay buffer
-
-
+- checkpoint.pt : parameters for actor/critic network
 
 
 
 ## Implementation
 
+The DDPGAgent class implements the DDPG algorithm. It creates during its initialization the local and target critic/actor networks. 
+It sets up the replay buffer and creates the noise process. 
+
+The act method returns the action obtained from the actor. During training noise is added for the exploration.
+The step method is called with the current state, next state and reward. The experience is stored in the replay buffer. 
+If enough data is collected, the agent learns by perform gradient steps for the actor/critic in the learn method. 
+
+In my first approach i learned at each step, which lead to a long training time and the agent can't solve
+the task. I changed the learning intervals based on the suggestions from the course. The agent learn in 20 episode intervals 10 times. 
+This improved the learning a lot. 
+
+
+After changing the learning interval, the agent started to gain a better score, but then the score started to drop or improved not further.
+I did some research and read the project information from the course. It seems to be the case the gradients explode. 
+I added gradient clipping to the critic training. Now the agents stopped to stuck or drop the scores.
+
+After these improvements, the agent started to learn, but the progress is still slow. I tried different learning rates and batch sizes, 
+which lead to the final batch size of 1024 samples.
+
+
+After the gradients and the new parameters computed, the target networks are updated with a soft update. 
+
+### Models
+
+
+#### Actor
+![](images/actormodel.png)
+
+#### Critic
+
+![](images/crtiticmodel.png)
+
+### Hyperparameters
+
+
+```python
+OU_SIGMA = 0.2          # Ornstein-Uhlenbeck noise parameter
+OU_THETA = 0.15         # Ornstein-Uhlenbeck noise parameter
+tau = 0.01
+Actor learning rate = 1e-3
+Critic learning rate = 1e-3
+Gamma = 0.99
+learn interval = 20
+Epsilon = 1
+Epsilon decay = 0.99
+BATCH_SIZE = 1024
+BUFFER_SIZE = 1e6
+```
 
 ### Results
 
+Using the training setup described in the previous section, the training script is able to yield a consistent solving of the environment under 150 episodes.
+
+![](images/score.png)
 
 ## Ideas for Future Work
 
+
+1. Implement the D4PG, A3C algorithm and compare with this DDPG performance
+2. Implement a prioritised Replay buffer
 
 ## References
 
@@ -104,4 +157,4 @@ The code is written in PyTorch and Python3, executed in Jupyter Notebook
 * [3] [*Deterministic Policy Gradients Algorithms* paper by Silver et. al.](http://proceedings.mlr.press/v32/silver14.pdf)
 * [4] [Post on *Deep Deterministic Policy Gradients* from OpenAI's **Spinning Up in RL**](https://spinningup.openai.com/en/latest/algorithms/ddpg.html)
 * [5] [Post on *Policy Gradient Algorithms* by **Lilian Weng**](https://lilianweng.github.io/lil-log/2018/04/08/policy-gradient-algorithms.html)
-
+* [6] [A Gentle Introduction to Exploding Gradients in Neural Networks](https://machinelearningmastery.com/exploding-gradients-in-neural-networks/)
